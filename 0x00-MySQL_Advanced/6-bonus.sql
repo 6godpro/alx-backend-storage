@@ -12,17 +12,17 @@ BEGIN
     -- create a temporary variables
 	DECLARE total INT;
 	DECLARE project_id INT;
-    -- check if the project exists
+    -- check if a project with the given project_name exists
 	SELECT COUNT(*) INTO total FROM projects WHERE name=project_name;
-    -- if it doesn't exist, create a new project with the project_name given
-	IF total = 0 THEN
-	   INSERT INTO projects (name) VALUES (project_name);
-       SET project_id = LAST_INSERT_ID();
+    -- if it doesn't exist, create a new project with the name given
+    IF total = 0 THEN
+        INSERT INTO projects (name) VALUES (project_name);
+        SET project_id = LAST_INSERT_ID();
     -- if it does, retrieve the id of the project with the given name
     ELSE
-	   SELECT id INTO project_id FROM projects WHERE name=project_name;
+	SELECT id INTO project_id FROM projects WHERE name=project_name;
 	END IF;
     -- create a new corrections record with the details
-	INSERT INTO corrections (user_id, project_id, score) VALUES (user_id, project_id, score);
+    INSERT INTO corrections (user_id, project_id, score) VALUES (user_id, project_id, score);
 END //
 DELIMITER ;
