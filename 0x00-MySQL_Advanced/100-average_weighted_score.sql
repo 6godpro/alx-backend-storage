@@ -9,9 +9,8 @@ BEGIN
     DECLARE weighted_average_score FLOAT;
 
     SELECT SUM(weight * score) / SUM(weight) INTO weighted_average_score
-    FROM users INNER JOIN corrections
-    ON user_id=users.id
-    INNER JOIN projects ON project_id=projects.id
+    FROM projects
+    INNER JOIN corrections ON project_id=projects.id
     WHERE user_id = id;
 
     UPDATE users SET average_score=weighted_average_score WHERE users.id=id;
