@@ -14,7 +14,7 @@ def count_calls(f: Callable) -> Callable:
        method decorated with this function is called.
     """
     @wraps(f)
-    def wrapper(self, *args, **kwargs) -> Callable:
+    def wrapper(self, *args, **kwargs):
         """Wrapper function."""
         self._redis.incr(f.__qualname__)
         return f(self, *args, **kwargs)
