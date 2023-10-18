@@ -4,7 +4,7 @@
 """
 import redis
 from uuid import uuid4
-from typing import Callable, Union
+from typing import Any, Callable, Union
 
 
 class Cache:
@@ -26,7 +26,7 @@ class Cache:
 
     def get(self,
             key: str,
-            fn: Callable) -> Union[str, bytes, int, float, None]:
+            fn=None) -> Any:
         """Returns the data associated with the key argument."""
         if self._redis.exists(key):
             if fn is not None:
