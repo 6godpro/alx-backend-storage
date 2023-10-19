@@ -2,6 +2,7 @@
 """
    This module contains a Cache class.
 """
+from ast import Call
 import redis
 from functools import wraps
 from typing import Any, Callable, Union
@@ -21,6 +22,20 @@ def count_calls(f: Callable) -> Callable:
     return wrapper
 
 
+def call_history(f: Callable) -> Callable:
+    """Records the input and output data of a method."""
+    @wraps(f)
+    def wrapper(self, *args, **kwargs):
+        """Wrapper function"""
+        result = f(self, *args, **kwargs)
+        input_key = f'{f.__qualname__}:inputs'
+        output_key = f'{f.__qualname__}:outputs'
+        self._redis.rpush(input_key, str(args))
+        self._redis.rpush(output_key, result)
+        return result
+    return wrapper
+
+
 class Cache:
     """Represents a Cache object."""
     def __init__(self) -> None:
@@ -28,6 +43,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @call_history
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
