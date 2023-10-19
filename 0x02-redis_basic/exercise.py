@@ -36,7 +36,7 @@ def call_history(f: Callable) -> Callable:
     return wrapper
 
 
-def replay(f: Callable):
+def replay(f: Callable) -> None:
     """Displays the history of calls of a particular function"""
     r = redis.Redis()
     input_key = f'{f.__qualname__}:inputs'
