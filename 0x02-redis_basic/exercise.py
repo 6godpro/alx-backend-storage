@@ -9,39 +9,39 @@ from typing import Any, Callable, Union
 from uuid import uuid4
 
 
-def count_calls(f: Callable) -> Callable:
+def count_calls(method: Callable) -> Callable:
     """
        Keeps track of the number of times that a
        method decorated with this function is called.
     """
-    @wraps(f)
+    @wraps(method)
     def wrapper(self, *args, **kwargs):
         """Wrapper function."""
-        self._redis.incr(f.__qualname__)
-        return f(self, *args, **kwargs)
+        self._redis.incr(method.__qualname__)
+        return method(self, *args, **kwargs)
     return wrapper
 
 
-def call_history(f: Callable) -> Callable:
+def call_history(method: Callable) -> Callable:
     """Records the input and output data of a method."""
-    @wraps(f)
+    @wraps(method)
     def wrapper(self, *args, **kwargs):
         """Wrapper function"""
-        result = f(self, *args, **kwargs)
-        input_key = f'{f.__qualname__}:inputs'
-        output_key = f'{f.__qualname__}:outputs'
+        result = method(self, *args, **kwargs)
+        input_key = f'{method.__qualname__}:inputs'
+        output_key = f'{method.__qualname__}:outputs'
         self._redis.rpush(input_key, str(args))
         self._redis.rpush(output_key, result)
         return result
     return wrapper
 
 
-def replay(f: Callable) -> None:
+def replay(method: Callable):
     """Displays the history of calls of a particular function"""
     r = redis.Redis()
-    input_key = f'{f.__qualname__}:inputs'
-    output_key = f'{f.__qualname__}:outputs'
-    key = f.__qualname__
+    input_key = f'{method.__qualname__}:inputs'
+    output_key = f'{method.__qualname__}:outputs'
+    key = method.__qualname__
 
     count = r.get(key)
     if count:
