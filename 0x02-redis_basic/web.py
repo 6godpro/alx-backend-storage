@@ -23,14 +23,17 @@ from functools import wraps
 def count(f):
     """Tracks the number of times a url was accessed."""
     @wraps(f)
-    def wrapper(*args, **kwargs):
+    def wrapper(url):
         """Wrapper function."""
-        key = f'count:{args[0]}'
+        response = f(url)
+        count_key = f'count:{url}'
+        response_key = f'response:{url}'
         r = redis.Redis()
-        if not r.exists(key):
-            r.set(key, 0, ex=10)
-        r.incr(key)
-        return f(*args, **kwargs)
+        if r.exists(response_key):
+            return r.get(response_key).decode('utf-8')
+        r.set(response_key, response, ex=10)
+        r.incr(count_key)
+        return response
     return wrapper
 
 
