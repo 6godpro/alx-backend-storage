@@ -4,11 +4,11 @@
 """
 import redis
 from functools import wraps
-from typing import Any, Union
+from typing import Any, Callable, Union
 from uuid import uuid4
 
 
-def count_calls(f):
+def count_calls(f: Callable) -> Callable:
     """
        Keeps track of the number of times that a
        method decorated with this function is called.
