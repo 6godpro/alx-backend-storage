@@ -25,11 +25,12 @@ def count(f):
     @wraps(f)
     def wrapper(url):
         """Wrapper function."""
-        count_key = f'count:{url}'
         response_key = f'response:{url}'
         r = redis.Redis()
         if r.exists(response_key):
             return r.get(response_key).decode('utf-8')
+
+        count_key = f'count:{url}'
         response = f(url)
         r.set(response_key, response, ex=10)
         r.incr(count_key)
@@ -41,3 +42,7 @@ def count(f):
 def get_page(url: str) -> str:
     """Returns a request's response."""
     return requests.get(url).text
+
+
+if __name__ == "__main__":
+    get_page('http://slowwly.robertomurray.co.uk')
